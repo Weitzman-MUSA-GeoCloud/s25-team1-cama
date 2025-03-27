@@ -10,7 +10,6 @@ from google.cloud import storage
 DIRNAME = pathlib.Path(__file__).parent
 BUCKET_NAME = os.getenv('DATA_LAKE_BUCKET')
 
-
 def extract_data(url, filename, blobname):
     response = requests.get(url)
     response.raise_for_status()
@@ -40,12 +39,12 @@ def extract_phl_opa_properties(request):
     return f'Downloaded to {filename} and uploaded to gs://{BUCKET_NAME}/{blobname}'
 
 
-@functions_framework.http
-def extract_phl_pwd_parcels(request):
-    print('Extracting PWD Parcels data...')
-    extract_data(
-        'https://phl.carto.com/api/v2/sql?q=SELECT+*+FROM+li_parcels&format=gpkg',
-        DIRNAME / 'phl_pwd_parcels.gpkg',
-        'raw/phl_pwd_parcels/phl_pwd_parcels.gpkg',
-    )
-    return f'Downloaded to {filename} and uploaded to gs://{BUCKET_NAME}/{blobname}'
+# @functions_framework.http
+# def extract_phl_pwd_parcels(request):
+#     print('Extracting PWD Parcels data...')
+#     extract_data(
+#         'https://phl.carto.com/api/v2/sql?q=SELECT+*+FROM+li_parcels&format=gpkg',
+#         DIRNAME / 'phl_pwd_parcels.gpkg',
+#         'raw/phl_pwd_parcels/phl_pwd_parcels.gpkg',
+#     )
+#     return f'Downloaded to {filename} and uploaded to gs://{BUCKET_NAME}/{blobname}'
