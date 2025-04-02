@@ -6,6 +6,9 @@
 .env
 *.pyc
 env/
+venv/  # Added venv to ignore virtual environments
+.Venv/
+.env/
 node_modules/
 
 # Data
