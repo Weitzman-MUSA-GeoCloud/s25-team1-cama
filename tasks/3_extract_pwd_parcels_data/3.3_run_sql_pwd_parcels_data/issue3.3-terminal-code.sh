@@ -5,7 +5,7 @@ gcloud functions deploy load-pwd-parcels \
 --entry-point=run_sql \
 --service-account='data-pipeline-user@musa5090s25-team1.iam.gserviceaccount.com' \
 --timeout=999s \
---memory=8Gi \
+--memory=16Gi \
 --no-allow-unauthenticated \
 --trigger-http \
 --gen2
