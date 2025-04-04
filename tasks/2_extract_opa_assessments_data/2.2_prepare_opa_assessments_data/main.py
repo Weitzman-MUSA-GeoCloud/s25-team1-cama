@@ -40,18 +40,18 @@ def prepare_phl_opa_assessments(request):
         data = list(reader)
 
     # Set up the projection
-    transformer = pyproj.Transformer.from_proj('epsg:2272', 'epsg:4326')
+    # transformer = pyproj.Transformer.from_proj('epsg:2272', 'epsg:4326')
 
     # Write the data to a JSONL file
     with open(prepared_filename, 'w') as f:
         for i, row in enumerate(data):
-            geom_wkt = row.pop('shape').split(';')[1]
-            if geom_wkt == 'POINT EMPTY':
-                row['geog'] = None
-            else:
-                geom = wkt.loads(geom_wkt)
-                x, y = transformer.transform(geom.x, geom.y)
-                row['geog'] = f'POINT({x} {y})'
+            # geom_wkt = row.pop('shape').split(';')[1]
+            # if geom_wkt == 'POINT EMPTY':
+            #     row['geog'] = None
+            # else:
+            #     geom = wkt.loads(geom_wkt)
+            #     x, y = transformer.transform(geom.x, geom.y)
+            #     row['geog'] = f'POINT({x} {y})'
             f.write(json.dumps(row) + '\n')
 
     print(f'Processed data into {prepared_filename}')

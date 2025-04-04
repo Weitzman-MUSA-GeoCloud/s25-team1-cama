@@ -1,8 +1,14 @@
-gcloud functions deploy prepare_opa_properties \
+functions-framework --debug \
+  --target prepare_phl_opa_assessments
+
+
+pip install pipreqs
+
+gcloud functions deploy prepare_opa_assessments \
 --region=us-east4 \
 --runtime=python312 \
 --source=. \
---entry-point=prepare_phl_opa_properties \
+--entry-point=prepare_phl_opa_assessments \
 --service-account='data-pipeline-user@musa5090s25-team1.iam.gserviceaccount.com' \
 --timeout=999s \
 --memory=8Gi \
@@ -10,4 +16,4 @@ gcloud functions deploy prepare_opa_properties \
 --set-env-vars='DATA_LAKE_BUCKET=musa5090s25-team1-raw_data,DESTINATION_DATA_LAKE_BUCKET=musa5090s25-team1-prepared_data' \
 --trigger-http
 
-gcloud functions call prepare_opa_properties --region=us-east4 --gen2
+gcloud functions call prepare_opa_assessments --region=us-east4 --gen2
