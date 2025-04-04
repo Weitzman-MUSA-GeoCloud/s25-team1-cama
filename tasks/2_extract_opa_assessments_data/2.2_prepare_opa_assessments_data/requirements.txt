@@ -3,3 +3,9 @@ google-cloud-storage==2.16.0
 pyproj==3.6.1
 python-dotenv==1.0.1
 Shapely==2.0.3
+functions_framework==3.8.2
+protobuf==6.30.2
+pyproj==3.7.1
+python-dotenv==1.1.0
+Shapely==2.0.7
+google-cloud-storage==2.16.0
