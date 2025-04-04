@@ -15,10 +15,10 @@ DIRNAME = pathlib.Path(__file__).parent
 
 
 @functions_framework.http
-def prepare_phl_opa_properties(request):
-    print('Preparing OPA Properties data...')
+def prepare_phl_opa_assessments(request):
+    print('Preparing OPA Assessments data...')
 
-    raw_filename = DIRNAME / 'opa_properties.csv'
+    raw_filename = DIRNAME / 'opa_assessments.csv'
     prepared_filename = DIRNAME / 'data.jsonl'
 
     # Get the source and destination bucket names from environment variables
@@ -29,7 +29,7 @@ def prepare_phl_opa_properties(request):
 
     # Download the data from the source bucket
     source_bucket = storage_client.bucket(source_bucket_name)
-    raw_blobname = 'opa_properties/opa_properties.csv'
+    raw_blobname = 'opa_assessments/opa_assessments.csv'
     blob = source_bucket.blob(raw_blobname)
     blob.download_to_filename(raw_filename)
     print(f'Downloaded to {raw_filename}')
@@ -58,7 +58,7 @@ def prepare_phl_opa_properties(request):
 
     # Upload the prepared data to the destination bucket
     destination_bucket = storage_client.bucket(destination_bucket_name)
-    prepared_blobname = 'opa_properties/data.jsonl'
+    prepared_blobname = 'opa_assessments/data.jsonl'
     blob = destination_bucket.blob(prepared_blobname)
     blob.upload_from_filename(prepared_filename)
     print(f'Uploaded to {prepared_blobname}')
