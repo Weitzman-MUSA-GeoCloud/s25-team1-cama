@@ -1,21 +1,47 @@
 main:
-    params: [input]
-    steps:
-    - extractOpaPropertyData:
-        call: http.post
-        args:
-            url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_opa_properties'
-            auth:
-                type: OIDC
-    - prepareOpaPropertyData:
-        call: http.post
-        args:
-            url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_opa_properties'
-            auth:
-                type: OIDC
-    - loadOpaPropertyData:
-        call: http.get
-        args:
-            url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-opa-properties'
-            auth:
-                type: OIDC
+  params: [input]
+  steps:
+  - parallelProcessing:
+      parallel:
+        branches:
+          - opaPropertiesBranch:
+              steps:
+                - extractOpaPropertyData:
+                    call: http.post
+                    args:
+                      url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_opa_properties'
+                      auth:
+                        type: OIDC
+                - prepareOpaPropertyData:
+                    call: http.post
+                    args:
+                      url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_opa_properties'
+                      auth:
+                        type: OIDC
+                - loadOpaPropertyData:
+                    call: http.get
+                    args:
+                      url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-opa-properties'
+                      auth:
+                        type: OIDC
+
+          - pwdParcelsBranch:
+              steps:
+                - extractPwdParcels:
+                    call: http.post
+                    args:
+                      url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_pwd_parcels'
+                      auth:
+                        type: OIDC
+                - preparePwdParcels:
+                    call: http.post
+                    args:
+                      url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_pwd_parcels'
+                      auth:
+                        type: OIDC
+                - loadPwdParcels:
+                    call: http.get
+                    args:
+                      url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-pwd-parcels'
+                      auth:
+                        type: OIDC
