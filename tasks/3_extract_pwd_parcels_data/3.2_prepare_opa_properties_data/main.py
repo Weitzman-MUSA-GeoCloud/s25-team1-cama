@@ -41,13 +41,12 @@ def prepare_pwd_parcels(request):
     with open(prepared_filename, 'w') as f:
         for feature in features:
             properties = feature.get('properties', {})
+            properties = {k.lower(): v for k, v in properties.items()}  # Lowercase keys
             geometry = feature.get('geometry')
 
-            # Use full GeoJSON geometry or WKT if you prefer
             if geometry:
-                # Optional: convert to WKT
                 geom = shape(geometry)
-                properties['geog'] = geom.wkt  # or use json.dumps(geometry) for raw GeoJSON geometry
+                properties['geog'] = geom.wkt
             else:
                 properties['geog'] = None
 
