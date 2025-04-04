@@ -12,9 +12,9 @@ BUCKET_NAME = os.getenv('DATA_LAKE_BUCKET')
 
 @functions_framework.http
 def extract_pwd_parcels(request):
-    url = 'https://opendata.arcgis.com/api/v3/datasets/84baed491de44f539889f2af178ad85c_0/downloads/data?format=csv&spatialRefId=4326&where=1%3D1'
-    filename = DIRNAME / 'pwd_parcels.csv'
-    blobname = 'pwd_parcels/pwd_parcels.csv'
+    url = 'https://opendata.arcgis.com/api/v3/datasets/84baed491de44f539889f2af178ad85c_0/downloads/data?format=geojson&spatialRefId=4326&where=1%3D1'
+    filename = DIRNAME / 'pwd_parcels.geojson'
+    blobname = 'pwd_parcels/pwd_parcels.geojson'
 
     # Download the file
     response = requests.get(url)

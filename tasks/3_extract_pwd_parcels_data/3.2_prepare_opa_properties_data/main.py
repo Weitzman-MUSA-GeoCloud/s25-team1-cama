@@ -1,14 +1,12 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-import csv
 import json
 import os
 import pathlib
 
-import pyproj
-from shapely import wkt
 import functions_framework
+from shapely.geometry import shape, mapping
 from google.cloud import storage
 
 DIRNAME = pathlib.Path(__file__).parent
@@ -16,12 +14,12 @@ DIRNAME = pathlib.Path(__file__).parent
 
 @functions_framework.http
 def prepare_pwd_parcels(request):
-    print('Preparing PWD Parcels data...')
+    print('Preparing PWD Parcels data (GeoJSON)...')
 
-    raw_filename = DIRNAME / 'pwd_parcels.csv'
+    raw_filename = DIRNAME / 'pwd_parcels.geojson'
     prepared_filename = DIRNAME / 'data.jsonl'
 
-    # Get the source and destination bucket names from environment variables
+    # Get bucket names from environment variables
     source_bucket_name = os.getenv('DATA_LAKE_BUCKET')
     destination_bucket_name = os.getenv('DESTINATION_DATA_LAKE_BUCKET')
 
@@ -29,34 +27,35 @@ def prepare_pwd_parcels(request):
 
     # Download the data from the source bucket
     source_bucket = storage_client.bucket(source_bucket_name)
-    raw_blobname = 'pwd_parcels/pwd_parcels.csv'
+    raw_blobname = 'pwd_parcels/pwd_parcels.geojson'
     blob = source_bucket.blob(raw_blobname)
     blob.download_to_filename(raw_filename)
     print(f'Downloaded to {raw_filename}')
 
-    # Load the data from the CSV file
+    # Load and process the GeoJSON data
     with open(raw_filename, 'r') as f:
-        reader = csv.DictReader(f)
-        data = list(reader)
+        geojson = json.load(f)
 
-    # Set up the projection
-    transformer = pyproj.Transformer.from_proj('epsg:2272', 'epsg:4326')
+    features = geojson['features']
 
-    # Write the data to a JSONL file
     with open(prepared_filename, 'w') as f:
-        for i, row in enumerate(data):
-            geom_wkt = row.pop('shape').split(';')[1]
-            if geom_wkt == 'POINT EMPTY':
-                row['geog'] = None
+        for feature in features:
+            properties = feature.get('properties', {})
+            geometry = feature.get('geometry')
+
+            # Use full GeoJSON geometry or WKT if you prefer
+            if geometry:
+                # Optional: convert to WKT
+                geom = shape(geometry)
+                properties['geog'] = geom.wkt  # or use json.dumps(geometry) for raw GeoJSON geometry
             else:
-                geom = wkt.loads(geom_wkt)
-                x, y = transformer.transform(geom.x, geom.y)
-                row['geog'] = f'POINT({x} {y})'
-            f.write(json.dumps(row) + '\n')
+                properties['geog'] = None
+
+            f.write(json.dumps(properties) + '\n')
 
     print(f'Processed data into {prepared_filename}')
 
-    # Upload the prepared data to the destination bucket
+    # Upload the processed file to the destination bucket
     destination_bucket = storage_client.bucket(destination_bucket_name)
     prepared_blobname = 'pwd_parcels/data.jsonl'
     blob = destination_bucket.blob(prepared_blobname)
