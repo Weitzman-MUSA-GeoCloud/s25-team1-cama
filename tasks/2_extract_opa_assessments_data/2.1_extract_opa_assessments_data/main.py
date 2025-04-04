@@ -11,10 +11,10 @@ DIRNAME = pathlib.Path(__file__).parent
 BUCKET_NAME = os.getenv('DATA_LAKE_BUCKET')
 
 @functions_framework.http
-def extract_phl_opa_properties(request):
-    url = 'https://opendata-downloads.s3.amazonaws.com/opa_properties_public.csv'
-    filename = DIRNAME / 'opa_properties.csv'
-    blobname = 'opa_properties/opa_properties.csv'
+def extract_phl_opa_assessments(request):
+    url = 'https://opendata-downloads.s3.amazonaws.com/assessments.csv'
+    filename = DIRNAME / 'opa_assessments.csv'
+    blobname = 'opa_assessments/opa_assessments.csv'
 
     # Download the file
     response = requests.get(url)
