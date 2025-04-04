@@ -1,0 +1,5 @@
+functions_framework==3.8.2
+google-cloud-storage==2.16.0
+protobuf==6.30.2
+python-dotenv==1.1.0
+Requests==2.32.3
