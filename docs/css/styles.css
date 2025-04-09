@@ -1,0 +1,144 @@
+/* Welcome to styles */
+
+/* Main interface */
+
+html, body, #map {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Barlow, sans-serif;
+}
+
+.content-panel {
+    max-height: 100vh;
+    overflow-y: auto;
+    width: 35%;
+    scroll-behavior: smooth;
+    background-color: #fefcf6;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left: 2rem; /* Custom padding for the left */
+    padding-right: 2rem; /* Custom padding for the right */
+
+    /* transition: width 0.5s ease, padding 0.5s ease;  */
+}
+
+#map {
+    height: 100vh;
+    width: 65%;
+}
+
+.floating-button {
+    position: absolute;
+    bottom: 6%; /* Distance from the bottom */
+    left: 36%; /* Distance from the right */
+    background-color: #f4f2ec; /* Button background color */
+    border: 1px solid #ccc; /* Button border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px; /* Padding for button */
+    cursor: pointer; /* Cursor style */
+    z-index: 1000; /* Ensure it is above other elements */
+    width: 8%;
+    text-align: center;
+}
+
+.floating-button:hover {
+    background-color: #cccccc; /* Change color on hover */
+}
+
+.image-container {
+    width: 7%; /* Set the width to 15% of the parent */
+    margin-top: 1rem; /* Adds spacing above the image container */
+    margin-bottom: 1rem; /* Adds spacing below the image container */
+    text-align: center; /* Centers the image horizontally */
+    transition: transform 0.3s ease; /* Smooth transition for the hover effect */
+}
+
+.image-container img {
+    max-width: 100%; /* Ensure the image fits within the container */
+    height: auto; /* Maintain the aspect ratio */
+    transform: rotate(330deg);
+}
+
+.image-container:hover {
+    transform: scale(1.15); /* Enlarge the image to 110% of its original size */
+}
+
+#assessor-btn {
+    background-color: #858379; /* Custom background for "Enter creative mode" */
+    border: none; /* Remove border */
+}
+
+#owner-btn {
+    background-color: #e6e4de; /* Custom background for the other two buttons */
+    color: black; /* Default text color should be black */
+    border: none; /* Remove border */
+}
+
+#assessor-btn:hover,
+#owner-btn:hover {
+    background-color: #f4f2ec;
+    color: black;
+}
+
+.semibold {
+    font-weight: 600; /* Semibold weight */
+}
+
+a {
+    color: #65635c; /* Set font color */
+    text-decoration: underline; /* Underline the link */
+}
+
+a:hover {
+    color: #b5ab86; /* Optional: Ensure the color remains the same when hovering */
+}
+
+#view-toggle {
+    position: absolute;
+    z-index: 1000;
+    width: fit-content;
+    padding: 1rem;
+    left: 35%;
+    background-color: #fefcf6;
+    width: 20%;
+}
+
+.form-check-input {
+    border-color: #ccc;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #858379; /* Bootstrap primary blue */
+    border-color: #858379;
+}
+
+.form-check-input:checked + .form-check-label {
+    color: #858379;
+    font-weight: 600;
+}
+
+.form-check-input:hover {
+    background-color: #e2e6ea;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.15rem rgba(116, 101, 41, 0.25); /* Light blue ring */
+    outline: none;
+}
+
+.form-check-label {
+    margin-left: 0.4rem; /* Adjust spacing as needed */
+}
+
+/* ASSESSORS */
+
+.geocoder-dropdown-item {
+    font-family: 'Barlow', sans-serif;
+}
+
+.geocoder-dropdown-text {
+    font-family: 'Barlow', sans-serif;
+}
