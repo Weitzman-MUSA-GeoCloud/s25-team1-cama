@@ -1,4 +1,4 @@
-gcloud functions deploy load-opa-properties \
+gcloud functions deploy load-opa-assessments \
 --region=us-east4 \
 --runtime=python312 \
 --source=. \
@@ -10,4 +10,4 @@ gcloud functions deploy load-opa-properties \
 --trigger-http \
 --gen2
 
-gcloud functions call load-opa-properties --region=us-east4 --gen2
+gcloud functions call load-opa-assessments --region=us-east4 --gen2

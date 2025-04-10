@@ -8,8 +8,8 @@ SQL_DIR_NAME = DIR_NAME / 'sql'  # Relative to this file
 @functions_framework.http
 def run_sql(request):
     sql_files = [
-        'source_phl_opa_properties.sql',
-        'core_phl_opa_properties.sql'
+        'source_phl_opa_assessments.sql',
+        'core_phl_opa_assessments.sql'
     ]
 
     bigquery_client = bigquery.Client()
