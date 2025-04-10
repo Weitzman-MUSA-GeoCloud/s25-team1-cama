@@ -16,5 +16,3 @@ data/
 
 # Sensitive files
 keys/
-*.csv
-*.jsonl
