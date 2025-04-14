@@ -1,0 +1,21 @@
+main:
+    params: [input]
+    steps:
+    - extractOpaAssessmentsData:
+        call: http.post
+        args:
+            url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_opa_assessments'
+            auth:
+                type: OIDC
+    - prepareOpaAssessmentsData:
+        call: http.post
+        args:
+            url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_opa_assessments'
+            auth:
+                type: OIDC
+    - loadOpaAssessmentsData:
+        call: http.get
+        args:
+            url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-opa-assessments'
+            auth:
+                type: OIDC
