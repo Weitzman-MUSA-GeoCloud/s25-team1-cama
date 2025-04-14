@@ -1,4 +1,4 @@
-gcloud functions deploy prepare_training_data \
+gcloud functions deploy prepare_model_training_data \
 --region=us-east4 \
 --runtime=python312 \
 --source=. \
@@ -10,4 +10,4 @@ gcloud functions deploy prepare_training_data \
 --trigger-http \
 --gen2
 
-gcloud functions call load-opa-properties --region=us-east4 --gen2
+gcloud functions call prepare_model_training_data --region=us-east4 --gen2
