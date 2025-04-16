@@ -1,4 +1,4 @@
-gcloud functions deploy create_tax_year_assessments \
+gcloud functions deploy ml_model_train \
 --region=us-east4 \
 --runtime=python312 \
 --source=. \
@@ -10,4 +10,4 @@ gcloud functions deploy create_tax_year_assessments \
 --trigger-http \
 --gen2
 
-gcloud functions call create_tax_year_assessments --region=us-east4 --gen2
+gcloud functions call ml_model_train --region=us-east4 --gen2
