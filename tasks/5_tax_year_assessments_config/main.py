@@ -7,15 +7,19 @@ from google.cloud import bigquery
 from google.cloud import storage
 import functions_framework
 
-@functions_framework.http('GET')
+@functions_framework.http
 def generate_assessment_chart_configs(request):
     bigquery_client = bigquery.Client()
 
     print('Starting query...')
     sql = '''
-        SELECT *
+        SELECT
+            tax_year,
+            CAST(lower_bound AS STRING) AS lower_bound,
+            CAST(upper_bound AS STRING) AS upper_bound,
+            CAST(property_count AS STRING) AS property_count
         FROM `musa5090s25-team1.derived.tax_year_assessment_bins`
-        ORDER BY tax_year, lower_bound
+        ORDER BY tax_year
     '''
 
     query_results = bigquery_client.query_and_wait(sql)
@@ -43,8 +47,8 @@ def generate_assessment_chart_configs(request):
 
     print('Uploading to GCS...')
     storage_client = storage.Client()
-    bucket = storage_client.bucket('musa5090s25-team1-public/configs')
-    blob = bucket.blob('current_assessment_bins.json')
+    bucket = storage_client.bucket('musa5090s25-team1-public')
+    blob = bucket.blob('configs/current_assessment_bins.json')
     blob.upload_from_string(myjson)
     print('Finished uploading.')
 

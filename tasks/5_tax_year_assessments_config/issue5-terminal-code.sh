@@ -1,6 +1,7 @@
 # check if function works locally
 functions-framework --debug \
-  --target generate-assessment-chart-configs
+    --target generate_assessment_chart_configs
+ # --target generate-assessment-chart-configs
  # --target generate_assessment_chart_configs
 
 gcloud functions deploy generate-assessment-chart-configs \
