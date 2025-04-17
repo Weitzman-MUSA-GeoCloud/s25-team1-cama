@@ -37,3 +37,53 @@ toggleBtn.addEventListener('click', () => {
 document.getElementById('assessor-btn').addEventListener('click', () => {
     loadAssessorsMode();
 });
+
+const bell = document.getElementById('bell-image');
+
+const dingDongPermutations = [
+'ding dong',
+'dong ding',
+'ding ding dong',
+'ding dong ding',
+'dong ding ding',
+'ding ding ding dong',
+'ding dong dong ding',
+'dong dong ding ding',
+'dong ding dong ding',
+'ding dong dong',
+'dong dong ding',
+'ding ding dong dong',
+'dong ding ding dong',
+'ding dong ding dong',
+'ding ding dong ding',
+'dong ding dong',
+'ding dong ding ding',
+'dong ding dong dong',
+'ding dong dong dong',
+'ding ding ding dong dong',
+'dong dong dong ding',
+'ding dong ding ding dong',
+'dong dong ding ding ding',
+'ding ding dong dong ding',
+'ding dong ding dong ding',
+'dong ding ding',
+'ding ding',
+'dong dong',
+'ding dong DING DONG',
+'ding... dong...',
+'ding-a-dong',
+'dingding dongdong',
+'dong-ding!',
+'ding & dong',
+'ding → dong → ding',
+'ding, dong, ding!',
+'dingity dong',
+'ding-dong-ding-dong',
+'DONG ding dong DING',
+'di-dong-ding-dong'
+];
+
+bell.addEventListener('click', () => {
+const randomPhrase = dingDongPermutations[Math.floor(Math.random() * dingDongPermutations.length)];
+alert(randomPhrase);
+});
