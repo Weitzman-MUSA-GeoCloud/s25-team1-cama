@@ -8,18 +8,17 @@ from google.cloud import storage
 import functions_framework
 
 @functions_framework.http
-def generate_assessment_chart_configs(request):
+def generate_current_assessment_chart_configs(request):
     bigquery_client = bigquery.Client()
 
     print('Starting query...')
     sql = '''
         SELECT
-            tax_year,
             CAST(lower_bound AS STRING) AS lower_bound,
             CAST(upper_bound AS STRING) AS upper_bound,
             CAST(property_count AS STRING) AS property_count
-        FROM `musa5090s25-team1.derived.tax_year_assessment_bins`
-        ORDER BY tax_year
+        FROM `musa5090s25-team1.derived.current_assessment_bins`
+        ORDER BY lower_bound
     '''
 
     query_results = bigquery_client.query_and_wait(sql)
@@ -31,7 +30,6 @@ def generate_assessment_chart_configs(request):
         features.append({
             'type': 'Feature',
             'properties': {
-                'tax_year': row['tax_year'],
                 'lower_bound': row['lower_bound'],
                 'upper_bound': row['upper_bound'],
                 'property_count': row['property_count']
