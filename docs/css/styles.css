@@ -6,15 +6,20 @@ html, body, #map {
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: Barlow, sans-serif;
+    font-family: "Open Sans", sans-serif;
 }
+
+h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+  }
 
 .content-panel {
     max-height: 100vh;
     overflow-y: auto;
     width: 35%;
     scroll-behavior: smooth;
-    background-color: #fefcf6;
+    background-color: #f0f0f0;
     padding-top: 2rem;
     padding-bottom: 2rem;
     padding-left: 2rem; /* Custom padding for the left */
@@ -65,19 +70,20 @@ html, body, #map {
 }
 
 #assessor-btn {
-    background-color: #858379; /* Custom background for "Enter creative mode" */
+    background-color: #0f4d90; /* Custom background for "Enter creative mode" */
+    color: white;
     border: none; /* Remove border */
 }
 
 #owner-btn {
-    background-color: #e6e4de; /* Custom background for the other two buttons */
-    color: black; /* Default text color should be black */
+    background-color: #2176d2; /* Custom background for the other two buttons */
+    color: white;
     border: none; /* Remove border */
 }
 
 #assessor-btn:hover,
 #owner-btn:hover {
-    background-color: #f4f2ec;
+    background-color: #96c9ff;
     color: black;
 }
 
@@ -100,7 +106,7 @@ a:hover {
     width: fit-content;
     padding: 1rem;
     left: 35%;
-    background-color: #fefcf6;
+    background-color: #ffefa2;
     width: 20%;
 }
 
@@ -136,9 +142,9 @@ a:hover {
 /* ASSESSORS */
 
 .geocoder-dropdown-item {
-    font-family: 'Barlow', sans-serif;
+    font-family: "Open Sans", sans-serif;
 }
 
 .geocoder-dropdown-text {
-    font-family: 'Barlow', sans-serif;
+    font-family: "Open Sans", sans-serif;
 }

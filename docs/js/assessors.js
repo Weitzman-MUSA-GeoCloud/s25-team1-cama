@@ -41,7 +41,88 @@ function loadAssessorsMode() {
     document.getElementById('back-icon-section').addEventListener('click', () => {
         location.reload();
     });
+
+    document.getElementById('view-toggle').style.display = 'block';
+
+    // map.off('mouseenter', 'property-tile-layer');
+    // map.off('mouseleave', 'property-tile-layer');
+  
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+      
+      map.on('mouseenter', 'property-tile-layer', (e) => {
+        map.getCanvas().style.cursor = 'pointer';
+      
+        const feature = e.features[0];
+        const id = feature.properties.property_id;
+        const address = feature.properties.address;
+        const currentAV = feature.properties.current_assessed_value;
+        const previousAV = feature.properties.tax_year_assessed_value;
+      
+        const formattedCurrent = `$${Number(currentAV).toLocaleString()}`;
+        const rawChange = currentAV - previousAV;
+        const formattedRaw = `${rawChange >= 0 ? '+' : '-'}$${Math.abs(rawChange).toLocaleString()}`;
+      
+        const pctChange = ((currentAV - previousAV) / previousAV) * 100;
+        const formattedPct = `${pctChange.toFixed(2)}%`;
+      
+        popup
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <strong>ID:</strong> ${id}<br>
+            <strong>Address:</strong> ${address}<br>
+            <strong>Current AV:</strong> ${formattedCurrent}<br>
+            <strong>Change from Previous Year:</strong> ${formattedRaw}<br>
+            <strong>% Change from Previous Year:</strong> ${formattedPct}
+          `)
+          .addTo(map);
+      });
+      
+    map.on('mouseleave', 'property-tile-layer', () => {
+    map.getCanvas().style.cursor = '';
+    popup.remove();
+    });
+
+    function updatePropertyTileOpacity() {
+      const viewCurrent = document.getElementById('viewCurrent');
+      const view2024 = document.getElementById('view2024');
+      const pctchange = document.getElementById('pctchange');
+      const abschange = document.getElementById('abschange');
     
+      // Hide all by default
+      const layers = [
+        'property-tile-layer',
+        'previous-tile-layer',
+        'absolute-change-layer',
+        'pct-change-layer'
+      ];
+      layers.forEach(layer => {
+        if (map.getLayer(layer)) {
+          map.setPaintProperty(layer, 'fill-opacity', 0);
+        }
+      });
+    
+      if (viewCurrent && viewCurrent.checked) {
+        map.setPaintProperty('property-tile-layer', 'fill-opacity', 0.9);
+      } else if (view2024 && view2024.checked) {
+        map.setPaintProperty('previous-tile-layer', 'fill-opacity', 0.8);
+      } else if (abschange && abschange.checked) {
+        map.setPaintProperty('absolute-change-layer', 'fill-opacity', 0.8);
+      } else if (pctchange && pctchange.checked) {
+        map.setPaintProperty('pct-change-layer', 'fill-opacity', 0.8);
+      }
+    }
+    
+    // Attach listeners to view toggle radios
+    document.getElementById('viewCurrent')?.addEventListener('change', updatePropertyTileOpacity);
+    document.getElementById('view2024')?.addEventListener('change', updatePropertyTileOpacity);
+    document.getElementById('pctchange')?.addEventListener('change', updatePropertyTileOpacity);
+    document.getElementById('abschange')?.addEventListener('change', updatePropertyTileOpacity);
+    
+    // Run once on load (based on default selection)
+    updatePropertyTileOpacity();
 }
 
 export { loadAssessorsMode };
