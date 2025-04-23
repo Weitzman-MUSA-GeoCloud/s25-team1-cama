@@ -11,9 +11,6 @@ function loadAssessorsMode() {
         Welcome to the assessor's mode!
     </p>
     <p>
-        Description
-    </p>
-    <p>
         Navigate directly on the map, or search for an area below:
     </p>
 

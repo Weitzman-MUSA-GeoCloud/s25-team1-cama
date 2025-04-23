@@ -24,7 +24,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <div class="container-fluid">
+    <div id="top-bar">
+        <img src="./site-assets/cloud.gif" alt="cloud icon" class="top-bar-icon">
+        <span>City of Philadelphia</span>
+      </div>
+    <div id="main-content" class="container-fluid">
         <div class="row">
 
             <!-- Description Panel -->
@@ -59,7 +63,7 @@
             <div id="reset-button" class="floating-button">Reset Zoom</div>
 
             <!-- Views Toggle Floating Panel -->
-            <div id="view-toggle" class="position-absolute top-0 m-3 p-3 rounded shadow" style="display: none;">
+            <div id="view-toggle" class="position-absolute m-3 p-3 rounded shadow" style="display: none;">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h6 class="mb-0">Views:</h6>
                     <button id="toggle-view-panel" class="btn btn-outline-secondary p-0" style="font-size: 0.75rem; width: 1.5rem; height: 1.5rem;" title="Minimize">
