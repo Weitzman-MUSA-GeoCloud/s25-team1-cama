@@ -1,0 +1,102 @@
+#1 opa properties 
+#2 opa_assessments
+#3 pwd_parcels
+#4 train and apply ml model
+#5 create JSONs for assessment history data and predictions -- still need to incorporate this 
+
+main:
+  params: [input]
+  steps:
+    - parallelProcessing:
+        parallel:
+          branches:
+            - opaPropertiesBranch:
+                steps:
+                  - extractOpaPropertyData:
+                      call: http.post
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_opa_properties'
+                        auth:
+                          type: OIDC
+                  - prepareOpaPropertyData:
+                      call: http.post
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_opa_properties'
+                        auth:
+                          type: OIDC
+                  - loadOpaPropertyData:
+                      call: http.get
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-opa-properties'
+                        auth:
+                          type: OIDC
+
+            - opaAssessmentsBranch:
+                steps:
+                  - extractOpaAssessmentsData:
+                      call: http.post
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_opa_assessments'
+                        auth:
+                          type: OIDC
+                  - prepareOpaAssessmentsData:
+                      call: http.post
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_opa_assessments'
+                        auth:
+                          type: OIDC
+                  - loadOpaAssessmentsData:
+                      call: http.get
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-opa-assessments'
+                        auth:
+                          type: OIDC
+
+            - pwdParcelsBranch:
+                steps:
+                  - extractPwdParcels:
+                      call: http.post
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/extract_pwd_parcels'
+                        auth:
+                          type: OIDC
+                  - preparePwdParcels:
+                      call: http.post
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/prepare_pwd_parcels'
+                        auth:
+                          type: OIDC
+                  - loadPwdParcels:
+                      call: http.get
+                      args:
+                        url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/load-pwd-parcels'
+                        auth:
+                          type: OIDC
+    - createTaxYearAssessmentTable:
+        call: http.post
+        args:
+          url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/generate-assessment-chart-configs'
+          auth:
+            type: OIDC
+    
+    - trainModel:
+        call: http.post
+        args:
+          url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/ml_model_train'
+          auth:
+            type: OIDC
+
+    - applyModel:
+        call: http.post
+        args:
+          url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/ml_model_apply'
+          auth:
+            type: OIDC
+
+    - createCurrentAssessmentTable:
+        call: http.post
+        args:
+          url: 'https://us-east4-musa5090s25-team1.cloudfunctions.net/generate-current-assessment-chart-configs'
+          auth:
+            type: OIDC
+    
