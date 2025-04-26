@@ -15,7 +15,7 @@ map.on('load', function() {
         tiles: [
           'https://storage.googleapis.com/musa5090s25-team1-public/tiles/properties/{z}/{x}/{y}.pbf'
         ],
-        minzoom: 13,
+        minzoom: 11,
         maxzoom: 26
       });
       

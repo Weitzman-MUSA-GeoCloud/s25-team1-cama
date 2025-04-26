@@ -35,6 +35,7 @@ function loadAssessorsMode() {
     </div>
     `;
 
+    let selectedPropertyId = null;  // Track currently selected feature
     document.getElementById('back-icon-section').addEventListener('click', () => {
         location.reload();
     });
@@ -83,12 +84,8 @@ function loadAssessorsMode() {
     });
 
     function updatePropertyTileOpacity() {
-      const viewCurrent = document.getElementById('viewCurrent');
-      const view2024 = document.getElementById('view2024');
-      const pctchange = document.getElementById('pctchange');
-      const abschange = document.getElementById('abschange');
+      selectedPropertyId = null;  // Reset any selection when changing view!
     
-      // Hide all by default
       const layers = [
         'property-tile-layer',
         'previous-tile-layer',
@@ -97,9 +94,15 @@ function loadAssessorsMode() {
       ];
       layers.forEach(layer => {
         if (map.getLayer(layer)) {
+          map.setFilter(layer, null);  // Clear filters
           map.setPaintProperty(layer, 'fill-opacity', 0);
         }
       });
+    
+      const viewCurrent = document.getElementById('viewCurrent');
+      const view2024 = document.getElementById('view2024');
+      const pctchange = document.getElementById('pctchange');
+      const abschange = document.getElementById('abschange');
     
       if (viewCurrent && viewCurrent.checked) {
         map.setPaintProperty('property-tile-layer', 'fill-opacity', 0.9);
@@ -120,6 +123,45 @@ function loadAssessorsMode() {
     
     // Run once on load (based on default selection)
     updatePropertyTileOpacity();
+
+    function getActiveLayer() {
+      const viewCurrent = document.getElementById('viewCurrent');
+      const view2024 = document.getElementById('view2024');
+      const abschange = document.getElementById('abschange');
+      const pctchange = document.getElementById('pctchange');
+    
+      if (viewCurrent && viewCurrent.checked) {
+        return 'property-tile-layer';
+      } else if (view2024 && view2024.checked) {
+        return 'previous-tile-layer';
+      } else if (abschange && abschange.checked) {
+        return 'absolute-change-layer';
+      } else if (pctchange && pctchange.checked) {
+        return 'pct-change-layer';
+      } else {
+        return null;
+      }
+    }
+
+    map.on('click', (e) => {
+      const activeLayer = getActiveLayer();
+      if (!activeLayer) return;  // Safety check
+    
+      // Check if the clicked feature belongs to the active layer
+      const features = map.queryRenderedFeatures(e.point, { layers: [activeLayer] });
+      if (!features.length) return;
+    
+      const clickedFeature = features[0];
+      const clickedId = clickedFeature.properties.property_id;
+    
+      if (selectedPropertyId === clickedId) {
+        map.setFilter(activeLayer, null);  // Remove any filters — show all again
+        selectedPropertyId = null;
+      } else {
+        map.setFilter(activeLayer, ['==', ['get', 'property_id'], clickedId]);
+        selectedPropertyId = clickedId;
+      }
+    });
 }
 
 export { loadAssessorsMode };
