@@ -1,5 +1,6 @@
 // main.js
 import { loadAssessorsMode } from './assessors.js';
+import { loadOwnersMode } from './owners.js';
 
 // Function to check for mobile devices
 function checkMobileDevice() {
@@ -36,6 +37,9 @@ toggleBtn.addEventListener('click', () => {
 
 document.getElementById('assessor-btn').addEventListener('click', () => {
     loadAssessorsMode();
+});
+document.getElementById('owner-btn').addEventListener('click', () => {
+    loadOwnersMode();
 });
 
 const bell = document.getElementById('bell-image');
