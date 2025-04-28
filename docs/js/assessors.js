@@ -17,10 +17,13 @@ function loadAssessorsMode() {
     <!-- Search Bar -->
     <nav class="navbar p-2 rounded">
         <form class="d-flex w-100" role="search">
-            <input class="form-control me-2" type="search" placeholder="E.G. Powelton Ave, 19104" aria-label="Search">
+            <input id="property-search-input" class="form-control me-2" type="search" placeholder="E.G. Powelton Ave, 19104" aria-label="Search">
         </form>
         <ul id="search-suggestions" class="list-group position-absolute z-3 mt-1" style="max-height: 200px; overflow-y: auto;"></ul>
     </nav>
+
+    <!-- Selected property info -->
+    <div id="selected-property-info" class="mt-3"></div>
 
     <br>
     <br>
@@ -170,6 +173,54 @@ function loadAssessorsMode() {
           selectedPropertyId = clickedId;
       }
   });
+
+  function setupSearchBar() {
+    const input = document.getElementById('property-search-input');
+    const suggestionsList = document.getElementById('search-suggestions');
+    const infoPanel = document.getElementById('selected-property-info');
+
+    input.addEventListener('input', (e) => {
+        const searchText = e.target.value.trim();
+        suggestionsList.innerHTML = '';
+
+        if (searchText.length === 0) {
+            return;
+        }
+
+        const features = map.queryRenderedFeatures({ layers: ['property-tile-layer'] });
+
+        const matches = features.filter(f => 
+            f.properties.property_id.includes(searchText)
+        ).slice(0, 5); // max 5
+
+        matches.forEach(feature => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action';
+            li.style.cursor = 'pointer';
+            li.innerText = `${feature.properties.property_id} - ${feature.properties.address}`;
+            li.addEventListener('click', () => {
+                // Zoom to the feature
+                const bbox = turf.bbox(feature);
+                map.fitBounds(bbox, { padding: 300 });
+
+                // Update selected property panel
+                infoPanel.innerHTML = `
+                    <h5>Selected Property</h5>
+                    <p><strong>ID:</strong> ${feature.properties.property_id}<br>
+                    <strong>Address:</strong> ${feature.properties.address}<br>
+                    <strong>Current Assessed Value:</strong> $${Number(feature.properties.current_assessed_value).toLocaleString()}<br>
+                    <strong>Tax Year Assessed Value:</strong> $${Number(feature.properties.tax_year_assessed_value).toLocaleString()}</p>
+                `;
+
+                suggestionsList.innerHTML = ''; // Clear suggestions
+                input.value = ''; // Clear input
+            });
+            suggestionsList.appendChild(li);
+        });
+    });
+}
+
+setupSearchBar();
     
 }
 
