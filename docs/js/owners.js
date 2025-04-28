@@ -1,7 +1,5 @@
 // owners.js
 
-// owners.js
-
 function loadOwnersMode() {
     const contentPanel = document.getElementById('description-panel');
     contentPanel.innerHTML = `
@@ -172,21 +170,26 @@ function loadOwnersMode() {
                 li.style.cursor = 'pointer';
                 li.innerText = `${feature.properties.property_id} - ${feature.properties.address}`;
 
-                li.addEventListener('click', () => {
+                li.addEventListener('click', async () => {
                     const bbox = turf.bbox(feature);
                     map.fitBounds(bbox, { padding: 300, maxZoom: 25 });
-
+                
+                    const propertyId = feature.properties.property_id;
+                
+                    // Clear previous info panel
                     infoPanel.innerHTML = `
                         <h5>Selected Property</h5>
-                        <p><strong>ID:</strong> ${feature.properties.property_id}<br>
+                        <p><strong>ID:</strong> ${propertyId}<br>
                         <strong>Address:</strong> ${feature.properties.address}<br>
                         <strong>Current Assessed Value:</strong> $${Number(feature.properties.current_assessed_value).toLocaleString()}<br>
                         <strong>Tax Year Assessed Value:</strong> $${Number(feature.properties.tax_year_assessed_value).toLocaleString()}</p>
+                        <div id="property-history-chart" class="my-3"></div>
+                        <div id="property-history-table" class="my-3"></div>
                     `;
-
+                
                     const activeLayer = getActiveLayer() || 'property-tile-layer';
                     const clickedId = feature.properties.property_id;
-
+                
                     if (selectedPropertyId === clickedId) {
                         map.setFilter(activeLayer, null);
                         selectedPropertyId = null;
@@ -194,9 +197,27 @@ function loadOwnersMode() {
                         map.setFilter(activeLayer, ['==', ['get', 'property_id'], clickedId]);
                         selectedPropertyId = clickedId;
                     }
-
+                
                     suggestionsList.innerHTML = '';
                     input.value = '';
+                
+                    // Fetch assessment history from BigQuery API
+                    try {
+                        const response = await fetch(`https://bq-api-49320340036.us-east4.run.app/query-assessments?property_id=${propertyId}`);
+                        const data = await response.json();
+                
+                        if (data.length > 0) {
+                            drawPropertyHistoryChart(data);
+                            drawPropertyHistoryTable(data);
+                        } else {
+                            document.getElementById('property-history-chart').innerHTML = `<p>No history found.</p>`;
+                            document.getElementById('property-history-table').innerHTML = '';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching property history:', error);
+                        document.getElementById('property-history-chart').innerHTML = `<p>Error loading history.</p>`;
+                        document.getElementById('property-history-table').innerHTML = '';
+                    }
                 });
 
                 suggestionsList.appendChild(li);
@@ -205,6 +226,130 @@ function loadOwnersMode() {
     }
 
     setupSearchBar();
+
+    function drawPropertyHistoryChart(data) {
+        // Sort data by year ascending
+        const sortedData = data.sort((a, b) => +a.year - +b.year);
+    
+        // Prepare dimensions
+        const margin = { top: 20, right: 30, bottom: 40, left: 60 },
+              width = 400 - margin.left - margin.right,
+              height = 250 - margin.top - margin.bottom;
+    
+        // Clear previous chart
+        const container = d3.select("#property-history-chart");
+        container.html('');
+
+        container.append("div")
+    .attr("id", "property-history-chart-tooltip")
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .style("background", "white")
+    .style("border", "1px solid #ccc")
+    .style("padding", "8px")
+    .style("border-radius", "4px")
+    .style("font-size", "12px")
+    .style("pointer-events", "none")
+    .style("box-shadow", "0px 2px 6px rgba(0,0,0,0.15)");
+    
+        const svg = container.append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+        const x = d3.scaleLinear()
+            .domain(d3.extent(sortedData, d => +d.year))
+            .range([0, width]);
+    
+            const marketValues = sortedData.map(d => +d.market_value);
+            const minValue = d3.min(marketValues);
+            const maxValue = d3.max(marketValues);
+            
+            // Add +/- 10% buffer
+            const buffer = (maxValue - minValue) * 0.1;
+            
+            const y = d3.scaleLinear()
+                .domain([minValue - buffer, maxValue + buffer])
+                .range([height, 0]);
+    
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x).ticks(sortedData.length).tickFormat(d3.format("d")));
+    
+        svg.append("g")
+            .call(d3.axisLeft(y).ticks(6));
+    
+        const line = d3.line()
+            .x(d => x(+d.year))
+            .y(d => y(+d.market_value));
+    
+        svg.append("path")
+            .datum(sortedData)
+            .attr("fill", "none")
+            .attr("stroke", "#0f4d90")
+            .attr("stroke-width", 2)
+            .attr("d", line);
+    
+        // Draw circles for each data point
+        svg.selectAll("circle")
+        .data(sortedData)
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(+d.year))
+        .attr("cy", d => y(+d.market_value))
+        .attr("r", 4)
+        .attr("fill", "#0f4d90")
+        .on("mouseover", (event, d) => {
+            d3.select("#property-history-chart-tooltip")
+                .style("visibility", "visible")
+                .html(`
+                    <strong>Year:</strong> ${d.year}<br>
+                    <strong>Market Value:</strong> $${Number(d.market_value).toLocaleString()}
+                `);
+        })
+        .on("mousemove", (event) => {
+            d3.select("#property-history-chart-tooltip")
+                .style("top", (event.pageY - 30) + "px")
+                .style("left", (event.pageX + 10) + "px");
+        })
+        .on("mouseout", () => {
+            d3.select("#property-history-chart-tooltip")
+                .style("visibility", "hidden");
+        });
+    }
+
+    function drawPropertyHistoryTable(data) {
+        const sortedData = data.sort((a, b) => +b.year - +a.year); // descending year
+    
+        const tableDiv = document.getElementById('property-history-table');
+        let tableHtml = `
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Market Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+    
+        sortedData.forEach(row => {
+            tableHtml += `
+                <tr>
+                    <td>${row.year}</td>
+                    <td>$${Number(row.market_value).toLocaleString()}</td>
+                </tr>
+            `;
+        });
+    
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+    
+        tableDiv.innerHTML = tableHtml;
+    }
 }
 
 export { loadOwnersMode };
