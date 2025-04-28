@@ -212,6 +212,18 @@ function loadAssessorsMode() {
                     <strong>Tax Year Assessed Value:</strong> $${Number(feature.properties.tax_year_assessed_value).toLocaleString()}</p>
                 `;
 
+                // 🆕 Simulate a click on the feature (set selection/filter)
+                const activeLayer = getActiveLayer() || 'property-tile-layer';
+                const clickedId = feature.properties.property_id;
+
+                if (selectedPropertyId === clickedId) {
+                    map.setFilter(activeLayer, null);
+                    selectedPropertyId = null;
+                } else {
+                    map.setFilter(activeLayer, ['==', ['get', 'property_id'], clickedId]);
+                    selectedPropertyId = clickedId;
+                }
+
                 suggestionsList.innerHTML = ''; // Clear suggestions
                 input.value = ''; // Clear input
             });
