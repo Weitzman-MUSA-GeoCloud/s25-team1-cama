@@ -11,13 +11,13 @@ function loadAssessorsMode() {
         Welcome to the assessor's mode!
     </p>
     <p>
-        Navigate directly on the map, or search for an area below:
+        Navigate directly on the map, or search for a property below using its ID / address:
     </p>
 
     <!-- Search Bar -->
     <nav class="navbar p-2 rounded">
         <form class="d-flex w-100" role="search">
-            <input id="property-search-input" class="form-control me-2" type="search" placeholder="E.G. Powelton Ave, 19104" aria-label="Search">
+            <input id="property-search-input" class="form-control me-2" type="search" placeholder="E.G. 883080615" aria-label="Search">
         </form>
         <ul id="search-suggestions" class="list-group position-absolute z-3 mt-1" style="max-height: 200px; overflow-y: auto;"></ul>
     </nav>
@@ -180,7 +180,7 @@ function loadAssessorsMode() {
     const infoPanel = document.getElementById('selected-property-info');
 
     input.addEventListener('input', (e) => {
-        const searchText = e.target.value.trim();
+        const searchText = e.target.value.trim().toLowerCase();
         suggestionsList.innerHTML = '';
 
         if (searchText.length === 0) {
@@ -189,9 +189,11 @@ function loadAssessorsMode() {
 
         const features = map.queryRenderedFeatures({ layers: ['property-tile-layer'] });
 
-        const matches = features.filter(f => 
-            f.properties.property_id.includes(searchText)
-        ).slice(0, 5); // max 5
+        const matches = features.filter(f => {
+            const propertyId = f.properties.property_id?.toString().toLowerCase() || '';
+            const address = f.properties.address?.toLowerCase() || '';
+            return propertyId.includes(searchText) || address.includes(searchText);
+        }).slice(0, 10); // limit to 5 matches
 
         matches.forEach(feature => {
             const li = document.createElement('li');
@@ -212,7 +214,7 @@ function loadAssessorsMode() {
                     <strong>Tax Year Assessed Value:</strong> $${Number(feature.properties.tax_year_assessed_value).toLocaleString()}</p>
                 `;
 
-                // 🆕 Simulate a click on the feature (set selection/filter)
+                // Simulate a map click (selection)
                 const activeLayer = getActiveLayer() || 'property-tile-layer';
                 const clickedId = feature.properties.property_id;
 
