@@ -1,12 +1,46 @@
 /* Welcome to styles */
 
 /* Main interface */
-
+/* 
 html, body, #map {
     height: 100%;
     margin: 0;
     padding: 0;
     font-family: "Open Sans", sans-serif;
+} */
+
+html, body {
+height: 100%;
+margin: 0;
+padding: 0;
+font-family: "Open Sans", sans-serif;
+}
+
+body {
+display: flex;
+flex-direction: column;
+}
+
+#top-bar {
+    background-color: #2276d2;
+    color: white;
+    padding: 10px 32px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* space between icon and text */
+  }
+  
+  .top-bar-icon {
+    height: 15px; /* adjust as needed */
+    width: auto;
+  }
+
+#main-content {
+height: 98%;
+display: flex;
+flex-direction: column;
 }
 
 h3 {
@@ -35,9 +69,9 @@ h3 {
 
 .floating-button {
     position: absolute;
-    bottom: 6%; /* Distance from the bottom */
+    bottom: 2%; /* Distance from the bottom */
     left: 36%; /* Distance from the right */
-    background-color: #f4f2ec; /* Button background color */
+    background-color: #f0f0f0; /* Button background color */
     border: 1px solid #ccc; /* Button border */
     border-radius: 5px; /* Rounded corners */
     padding: 5px; /* Padding for button */
@@ -105,8 +139,9 @@ a:hover {
     z-index: 1000;
     width: fit-content;
     padding: 1rem;
+    top: 30px;
     left: 35%;
-    background-color: #ffefa2;
+    background-color: #f8f9fa;
     width: 20%;
 }
 
@@ -117,21 +152,21 @@ a:hover {
 }
 
 .form-check-input:checked {
-    background-color: #858379; /* Bootstrap primary blue */
-    border-color: #858379;
+    background-color: #2276d2;
+    border-color: #2276d2;
 }
 
 .form-check-input:checked + .form-check-label {
-    color: #858379;
+    color: #2276d2;
     font-weight: 600;
 }
 
 .form-check-input:hover {
-    background-color: #e2e6ea;
+    background-color: #96c9ff;
 }
 
 .form-check-input:focus {
-    box-shadow: 0 0 0 0.15rem rgba(116, 101, 41, 0.25); /* Light blue ring */
+    box-shadow: 0 0 0 0.15rem #96c9ff;
     outline: none;
 }
 

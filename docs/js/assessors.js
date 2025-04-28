@@ -11,19 +11,19 @@ function loadAssessorsMode() {
         Welcome to the assessor's mode!
     </p>
     <p>
-        Description
-    </p>
-    <p>
         Navigate directly on the map, or search for an area below:
     </p>
 
     <!-- Search Bar -->
     <nav class="navbar p-2 rounded">
         <form class="d-flex w-100" role="search">
-            <input class="form-control me-2" type="search" placeholder="E.G. Powelton Ave, 19104" aria-label="Search">
+            <input id="property-search-input" class="form-control me-2" type="search" placeholder="E.G. Powelton Ave, 19104" aria-label="Search">
         </form>
         <ul id="search-suggestions" class="list-group position-absolute z-3 mt-1" style="max-height: 200px; overflow-y: auto;"></ul>
     </nav>
+
+    <!-- Selected property info -->
+    <div id="selected-property-info" class="mt-3"></div>
 
     <br>
     <br>
@@ -38,6 +38,7 @@ function loadAssessorsMode() {
     </div>
     `;
 
+    let selectedPropertyId = null;  // Track currently selected feature
     document.getElementById('back-icon-section').addEventListener('click', () => {
         location.reload();
     });
@@ -86,12 +87,8 @@ function loadAssessorsMode() {
     });
 
     function updatePropertyTileOpacity() {
-      const viewCurrent = document.getElementById('viewCurrent');
-      const view2024 = document.getElementById('view2024');
-      const pctchange = document.getElementById('pctchange');
-      const abschange = document.getElementById('abschange');
+      selectedPropertyId = null;  // Reset any selection when changing view!
     
-      // Hide all by default
       const layers = [
         'property-tile-layer',
         'previous-tile-layer',
@@ -100,9 +97,15 @@ function loadAssessorsMode() {
       ];
       layers.forEach(layer => {
         if (map.getLayer(layer)) {
+          map.setFilter(layer, null);  // Clear filters
           map.setPaintProperty(layer, 'fill-opacity', 0);
         }
       });
+    
+      const viewCurrent = document.getElementById('viewCurrent');
+      const view2024 = document.getElementById('view2024');
+      const pctchange = document.getElementById('pctchange');
+      const abschange = document.getElementById('abschange');
     
       if (viewCurrent && viewCurrent.checked) {
         map.setPaintProperty('property-tile-layer', 'fill-opacity', 0.9);
@@ -123,6 +126,102 @@ function loadAssessorsMode() {
     
     // Run once on load (based on default selection)
     updatePropertyTileOpacity();
+
+    function getActiveLayer() {
+      const viewCurrent = document.getElementById('viewCurrent');
+      const view2024 = document.getElementById('view2024');
+      const abschange = document.getElementById('abschange');
+      const pctchange = document.getElementById('pctchange');
+    
+      if (viewCurrent && viewCurrent.checked) {
+        return 'property-tile-layer';
+      } else if (view2024 && view2024.checked) {
+        return 'previous-tile-layer';
+      } else if (abschange && abschange.checked) {
+        return 'absolute-change-layer';
+      } else if (pctchange && pctchange.checked) {
+        return 'pct-change-layer';
+      } else {
+        return null;
+      }
+    }
+
+    map.on('click', (e) => {
+      const activeLayer = getActiveLayer();
+      if (!activeLayer) return;  // Safety check
+  
+      // Check if the clicked feature belongs to the active layer
+      const features = map.queryRenderedFeatures(e.point, { layers: [activeLayer] });
+      if (!features.length) return;
+  
+      const clickedFeature = features[0];
+      const clickedId = clickedFeature.properties.property_id;
+  
+      // 🆕 Console log the clicked feature!
+      console.log('🖱️ Clicked feature:', clickedFeature);
+
+      // address: "3000 WALNUT ST"
+      // current_assessed_value: 10040700
+      // property_id: "885715940"
+      // tax_year_assessed_value: 10039700
+  
+      if (selectedPropertyId === clickedId) {
+          map.setFilter(activeLayer, null);  // Remove any filters — show all again
+          selectedPropertyId = null;
+      } else {
+          map.setFilter(activeLayer, ['==', ['get', 'property_id'], clickedId]);
+          selectedPropertyId = clickedId;
+      }
+  });
+
+  function setupSearchBar() {
+    const input = document.getElementById('property-search-input');
+    const suggestionsList = document.getElementById('search-suggestions');
+    const infoPanel = document.getElementById('selected-property-info');
+
+    input.addEventListener('input', (e) => {
+        const searchText = e.target.value.trim();
+        suggestionsList.innerHTML = '';
+
+        if (searchText.length === 0) {
+            return;
+        }
+
+        const features = map.queryRenderedFeatures({ layers: ['property-tile-layer'] });
+
+        const matches = features.filter(f => 
+            f.properties.property_id.includes(searchText)
+        ).slice(0, 5); // max 5
+
+        matches.forEach(feature => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action';
+            li.style.cursor = 'pointer';
+            li.innerText = `${feature.properties.property_id} - ${feature.properties.address}`;
+            li.addEventListener('click', () => {
+                // Zoom to the feature
+                const bbox = turf.bbox(feature);
+                map.fitBounds(bbox, { padding: 300 });
+
+                // Update selected property panel
+                infoPanel.innerHTML = `
+                    <h5>Selected Property</h5>
+                    <p><strong>ID:</strong> ${feature.properties.property_id}<br>
+                    <strong>Address:</strong> ${feature.properties.address}<br>
+                    <strong>Current Assessed Value:</strong> $${Number(feature.properties.current_assessed_value).toLocaleString()}<br>
+                    <strong>Tax Year Assessed Value:</strong> $${Number(feature.properties.tax_year_assessed_value).toLocaleString()}</p>
+                `;
+
+                suggestionsList.innerHTML = ''; // Clear suggestions
+                input.value = ''; // Clear input
+            });
+            suggestionsList.appendChild(li);
+        });
+    });
+}
+
+setupSearchBar();
+    
 }
 
 export { loadAssessorsMode };

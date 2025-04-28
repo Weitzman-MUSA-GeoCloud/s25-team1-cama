@@ -4,7 +4,7 @@ var map = new mapboxgl.Map({
     container: 'map', // ID of the div where the map will be placed
     style: 'mapbox://styles/byronnn/cm9rapweo004c01qs5l0n4ncv', // Mapbox style
     center: [-75.181756, 39.952451], // Initial position [lng, lat]
-    zoom: 13
+    zoom: 14
 });
 
 var nav = new mapboxgl.NavigationControl();
@@ -15,7 +15,7 @@ map.on('load', function() {
         tiles: [
           'https://storage.googleapis.com/musa5090s25-team1-public/tiles/properties/{z}/{x}/{y}.pbf'
         ],
-        minzoom: 13,
+        minzoom: 11,
         maxzoom: 26
       });
       
@@ -104,22 +104,6 @@ map.on('load', function() {
           'fill-outline-color': '#000000'
         }
       });
-
-      // const center = map.getCenter();
-
-      // map.once('idle', () => {
-      //   const features = map.queryRenderedFeatures(
-      //     map.project(center),
-      //     { layers: ['property-tile-layer'] }
-      //   );
-
-      //   if (features.length > 0) {
-      //     const properties = Object.keys(features[0].properties);
-      //     console.log('Property keys in vector tile:', properties);
-      //   } else {
-      //     console.warn('No features found at the center of the map.');
-      //   }
-      // });
 
 });
 
