@@ -10,16 +10,17 @@ function loadAssessorsMode() {
     <p>
         Welcome to the assessor's mode!
     </p>
+    <div id="summary-stats" class="my-3"></div>
     <p>
         Navigate directly on the map, or search for a property below using its ID / address:
     </p>
 
     <!-- Search Bar -->
     <nav class="navbar p-2 rounded">
-        <form class="d-flex w-100" role="search">
-            <input id="property-search-input" class="form-control me-2" type="search" placeholder="E.G. 883080615" aria-label="Search">
-        </form>
-        <ul id="search-suggestions" class="list-group position-absolute z-3 mt-1" style="max-height: 200px; overflow-y: auto;"></ul>
+        <div class="d-flex flex-column w-100" role="search">
+            <input id="property-search-input" class="form-control mb-2" type="search" placeholder="E.G. 883080615" aria-label="Search">
+            <ul id="search-suggestions" class="list-group" style="max-height: 200px; overflow-y: auto;"></ul>
+        </div>
     </nav>
 
     <!-- Selected property info -->
@@ -235,6 +236,45 @@ function loadAssessorsMode() {
 }
 
 setupSearchBar();
+
+function updateSummaryStats() {
+  const features = map.queryRenderedFeatures({ layers: ['property-tile-layer'] });
+
+  if (!features.length) {
+      document.getElementById('summary-stats').innerHTML = '<p>Loading summary...</p>';
+      return;
+  }
+
+  let increaseCount = 0;
+  let totalPctChange = 0;
+  let validFeatureCount = 0;
+
+  features.forEach(f => {
+      const current = f.properties.current_assessed_value;
+      const previous = f.properties.tax_year_assessed_value;
+
+      if (current != null && previous != null && previous !== 0) {
+          const pctChange = ((current - previous) / previous) * 100;
+          totalPctChange += pctChange;
+          validFeatureCount += 1;
+
+          if (current > previous) {
+              increaseCount += 1;
+          }
+      }
+  });
+
+  const meanPctChange = (totalPctChange / validFeatureCount).toFixed(2);
+
+  document.getElementById('summary-stats').innerHTML = `
+      <p>
+          There were <strong>${increaseCount}</strong> properties that increased in assessed value since the last mass appraisal.
+          Overall, each property assessment changed by an increase of <strong>${meanPctChange}%</strong> on average.
+      </p>
+  `;
+}
+
+
     
 }
 
