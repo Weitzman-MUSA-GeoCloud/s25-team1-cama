@@ -152,21 +152,21 @@ a:hover {
 }
 
 .form-check-input:checked {
-    background-color: #858379; /* Bootstrap primary blue */
-    border-color: #858379;
+    background-color: #2276d2;
+    border-color: #2276d2;
 }
 
 .form-check-input:checked + .form-check-label {
-    color: #858379;
+    color: #2276d2;
     font-weight: 600;
 }
 
 .form-check-input:hover {
-    background-color: #e2e6ea;
+    background-color: #96c9ff;
 }
 
 .form-check-input:focus {
-    box-shadow: 0 0 0 0.15rem rgba(116, 101, 41, 0.25); /* Light blue ring */
+    box-shadow: 0 0 0 0.15rem #96c9ff;
     outline: none;
 }
 

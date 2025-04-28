@@ -146,22 +146,31 @@ function loadAssessorsMode() {
     map.on('click', (e) => {
       const activeLayer = getActiveLayer();
       if (!activeLayer) return;  // Safety check
-    
+  
       // Check if the clicked feature belongs to the active layer
       const features = map.queryRenderedFeatures(e.point, { layers: [activeLayer] });
       if (!features.length) return;
-    
+  
       const clickedFeature = features[0];
       const clickedId = clickedFeature.properties.property_id;
-    
+  
+      // 🆕 Console log the clicked feature!
+      console.log('🖱️ Clicked feature:', clickedFeature);
+
+      // address: "3000 WALNUT ST"
+      // current_assessed_value: 10040700
+      // property_id: "885715940"
+      // tax_year_assessed_value: 10039700
+  
       if (selectedPropertyId === clickedId) {
-        map.setFilter(activeLayer, null);  // Remove any filters — show all again
-        selectedPropertyId = null;
+          map.setFilter(activeLayer, null);  // Remove any filters — show all again
+          selectedPropertyId = null;
       } else {
-        map.setFilter(activeLayer, ['==', ['get', 'property_id'], clickedId]);
-        selectedPropertyId = clickedId;
+          map.setFilter(activeLayer, ['==', ['get', 'property_id'], clickedId]);
+          selectedPropertyId = clickedId;
       }
-    });
+  });
+    
 }
 
 export { loadAssessorsMode };
