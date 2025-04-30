@@ -242,8 +242,8 @@ function updateSummaryStats() {
   const features = map.queryRenderedFeatures({ layers: ['property-tile-layer'] });
 
   if (!features.length) {
-      document.getElementById('summary-stats').innerHTML = '<p>Loading summary...</p>';
-      return;
+    document.getElementById('summary-stats').innerHTML = '<p>Loading summary...</p>';
+    return;
   }
 
   let increaseCount = 0;
@@ -251,29 +251,31 @@ function updateSummaryStats() {
   let validFeatureCount = 0;
 
   features.forEach(f => {
-      const current = f.properties.current_assessed_value;
-      const previous = f.properties.tax_year_assessed_value;
+    const current = Number(f.properties.current_assessed_value);
+    const previous = Number(f.properties.tax_year_assessed_value);
 
-      if (current != null && previous != null && previous !== 0) {
-          const pctChange = ((current - previous) / previous) * 100;
-          totalPctChange += pctChange;
-          validFeatureCount += 1;
+    if (!isNaN(current) && !isNaN(previous) && previous !== 0) {
+      const pctChange = ((current - previous) / previous) * 100;
+      totalPctChange += pctChange;
+      validFeatureCount += 1;
 
-          if (current > previous) {
-              increaseCount += 1;
-          }
+      if (current > previous) {
+        increaseCount += 1;
       }
+    }
   });
 
-  const meanPctChange = (totalPctChange / validFeatureCount).toFixed(2);
+  const meanPctChange = validFeatureCount > 0
+    ? (totalPctChange / validFeatureCount).toFixed(2)
+    : '0.00';
 
   document.getElementById('summary-stats').innerHTML = `
-      <p>
-          There were <strong>${increaseCount}</strong> properties that increased in assessed value since the last mass appraisal.
-          Overall, each property assessment changed by an increase of <strong>${meanPctChange}%</strong> on average.
-      </p>
-      <p>Current assessment values:</p>
-      <div id="assessment-chart" class="mt-4"></div>
+    <p>
+      There were <strong>${increaseCount.toLocaleString()}</strong> properties that increased in assessed value since the last mass appraisal.
+      Overall, each property assessment changed by an increase of <strong>${meanPctChange}%</strong> on average.
+    </p>
+    <p>Current assessment values:</p>
+    <div id="assessment-chart" class="mt-4"></div>
   `;
 }
 
