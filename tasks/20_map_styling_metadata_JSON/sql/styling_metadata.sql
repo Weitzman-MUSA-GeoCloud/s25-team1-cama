@@ -83,13 +83,33 @@ percent_difference_stats AS (
 ),
 
 stats AS (
-    SELECT field, min_value, max_value, quintiles FROM market_value_stats
+    SELECT
+        field,
+        CAST(ROUND(min_value) AS NUMERIC) AS min_value,
+        CAST(ROUND(max_value) AS NUMERIC) AS max_value,
+        ARRAY(SELECT CAST(ROUND(value) AS NUMERIC) FROM UNNEST(quintiles) AS value) AS quintiles 
+    FROM market_value_stats
     UNION ALL
-    SELECT field, min_value, max_value, ARRAY(SELECT CAST(value AS NUMERIC) FROM UNNEST(quintiles) AS value) FROM predicted_value_stats
+    SELECT
+        field,
+        CAST(ROUND(min_value) AS NUMERIC) AS min_value,
+        CAST(ROUND(max_value) AS NUMERIC) AS max_value,
+        ARRAY(SELECT CAST(ROUND(value) AS NUMERIC) FROM UNNEST(quintiles) AS value) AS quintiles 
+    FROM predicted_value_stats
     UNION ALL
-    SELECT field, min_value, max_value, ARRAY(SELECT CAST(value AS NUMERIC) FROM UNNEST(quintiles) AS value) FROM absolute_difference_stats
+    SELECT
+        field,
+        CAST(ROUND(min_value) AS NUMERIC) AS min_value,
+        CAST(ROUND(max_value) AS NUMERIC) AS max_value,
+        ARRAY(SELECT CAST(ROUND(value) AS NUMERIC) FROM UNNEST(quintiles) AS value) AS quintiles 
+    FROM absolute_difference_stats
     UNION ALL
-    SELECT field, min_value, max_value, ARRAY(SELECT CAST(value AS NUMERIC) FROM UNNEST(quintiles) AS value) FROM percent_difference_stats
+    SELECT
+        field,
+        CAST(ROUND(min_value) AS NUMERIC) AS min_value,
+        CAST(ROUND(max_value) AS NUMERIC) AS max_value,
+        ARRAY(SELECT CAST(ROUND(value) AS NUMERIC) FROM UNNEST(quintiles) AS value) AS quintiles 
+    FROM percent_difference_stats
 )
 
 SELECT
