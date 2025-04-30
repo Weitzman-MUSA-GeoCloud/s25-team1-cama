@@ -16,7 +16,7 @@ map.on('load', function() {
           'https://storage.googleapis.com/musa5090s25-team1-public/tiles/properties/{z}/{x}/{y}.pbf'
         ],
         minzoom: 11,
-        maxzoom: 26
+        maxzoom: 20
       });
       
       // Current year assessment values
