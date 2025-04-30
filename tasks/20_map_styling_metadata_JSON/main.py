@@ -1,5 +1,7 @@
 import dotenv
 import json
+import pathlib
+from decimal import Decimal
 from google.cloud import bigquery
 from google.cloud import storage
 import functions_framework
@@ -8,6 +10,14 @@ dotenv.load_dotenv()
 
 DIR_NAME = pathlib.Path(__file__).parent
 SQL_DIR_NAME = DIR_NAME / 'sql'  # Relative to this file
+
+
+def decimal_default(obj):
+    """Custom JSON serializer for Decimal objects."""
+    if isinstance(obj, Decimal):
+        return float(obj)  # Convert Decimal to float
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
 
 @functions_framework.http
 def create_mapstyle_metadata(request):
@@ -34,6 +44,7 @@ def create_mapstyle_metadata(request):
 
     features = []
     for row in rows:
+        print(row)
         features.append({
             'type': 'Feature',
             'properties': {
@@ -49,7 +60,8 @@ def create_mapstyle_metadata(request):
         'features': features
     }
 
-    myjson = json.dumps(feature_collection)
+    # Use the custom serializer for Decimal objects
+    myjson = json.dumps(feature_collection, default=decimal_default)
 
     print('Uploading to GCS...')
     storage_client = storage.Client()
