@@ -24,10 +24,10 @@ def create_mapstyle_metadata(request):
         features.append({
             'type': 'Feature',
             'properties': {
-                'field': row['styling_metadata. field'],
-                'min_value': row['styling_metadata. min_value'],
-                'max_value': row['styling_metadata. max_value'],
-                'quintiles': row['styling_metadata. quintiles']
+                'field': row['field'],
+                'min_value': row['min_value'],
+                'max_value': row['max_value'],
+                'quintiles': row['quintiles']
             }
         })
 

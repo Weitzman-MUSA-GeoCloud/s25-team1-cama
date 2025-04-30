@@ -93,5 +93,5 @@ stats AS (
 )
 
 SELECT
-    ARRAY_AGG(STRUCT(field, min_value, max_value, quintiles)) AS styling_metadata
+    *
 FROM stats;
