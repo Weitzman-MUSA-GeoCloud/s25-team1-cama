@@ -15,6 +15,13 @@ gcloud run jobs execute generate-property-tiles \
 gcloud run jobs executions describe generate-property-tiles-822d2 \
   --region us-east4
 
+
+
+
+
+
+
+
 # Sean for ref
 
 #### Only needed once when creating new job
