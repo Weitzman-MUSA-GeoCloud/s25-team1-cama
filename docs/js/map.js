@@ -4,7 +4,9 @@ var map = new mapboxgl.Map({
     container: 'map', // ID of the div where the map will be placed
     style: 'mapbox://styles/byronnn/cm9rapweo004c01qs5l0n4ncv', // Mapbox style
     center: [-75.181756, 39.952451], // Initial position [lng, lat]
-    zoom: 14
+    minZoom: 10,
+    maxZoom: 20,
+    zoom: 12
 });
 
 var nav = new mapboxgl.NavigationControl();
@@ -15,7 +17,7 @@ map.on('load', function() {
         tiles: [
           'https://storage.googleapis.com/musa5090s25-team1-public/tiles/properties/{z}/{x}/{y}.pbf'
         ],
-        minzoom: 11,
+        minzoom: 10,
         maxzoom: 20
       });
       
